@@ -17,13 +17,13 @@ EBUserDefined(
   
   // Build geometry pieces using EB2::* methods
   RealArray b1_lo = {AMREX_D_DECL(-0.17,0.066,-0.01)};
-  RealArray b1_hi = {AMREX_D_DECL(0.042,0.07,0.011)};
+  RealArray b1_hi = {AMREX_D_DECL(0.042,0.07,0.031)};
   RealArray b2_lo = {AMREX_D_DECL(0.012,0.032,-0.01)};
-  RealArray b2_hi = {AMREX_D_DECL(0.09,0.036,0.011)};
+  RealArray b2_hi = {AMREX_D_DECL(0.09,0.036,0.031)};
   RealArray b3_lo = {AMREX_D_DECL(0.042,0.036,-0.01)};
-  RealArray b3_hi = {AMREX_D_DECL(0.09,0.09,0.011)};
+  RealArray b3_hi = {AMREX_D_DECL(0.09,0.09,0.031)};
   RealArray b4_lo = {AMREX_D_DECL(-0.17,0.068,-0.01)};
-  RealArray b4_hi = {AMREX_D_DECL(-0.12,0.1,0.011)};
+  RealArray b4_hi = {AMREX_D_DECL(-0.12,0.1,0.031)};
 
   // EB upper tongue 
   EB2::BoxIF box1(b1_lo, b1_hi, false);
@@ -33,7 +33,7 @@ EBUserDefined(
   EB2::BoxIF box3(b3_lo, b3_hi, false);
   // sphere
   Real radius = 0.022;
-  Array<Real,AMREX_SPACEDIM> center{AMREX_D_DECL(0.042, 0.058,0.005)}; //Center of the sphere
+  Array<Real,AMREX_SPACEDIM> center{AMREX_D_DECL(0.042, 0.058,0.015)}; //Center of the sphere
   // EB inlet upper left box
   EB2::BoxIF box4(b4_lo, b4_hi, false);
 
