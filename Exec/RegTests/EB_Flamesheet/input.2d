@@ -1,0 +1,100 @@
+#---------------------- DOMAIN DEFINITION ------------------------
+geometry.is_periodic = 0 0                  # For each dir, 0: non-perio, 1: periodic
+geometry.coord_sys   = 0                    # 0 => cart, 1 => RZ
+geometry.prob_lo     =  -0.16    0.02        # x_lo y_lo (z_lo)
+geometry.prob_hi     =   0.08    0.08        # x_hi y_hi (z_hi)
+
+#---------------------- BC FLAGS ---------------------------------
+# Interior, Inflow, Outflow, Symmetry,
+# SlipWallAdiab, NoSlipWallAdiab, SlipWallIsotherm, NoSlipWallIsotherm
+peleLM.lo_bc = Outflow  NoSlipWallAdiab    # bc in x_lo y_lo (z_lo)
+peleLM.hi_bc = Inflow   NoSlipWallAdiab    # bc in x_hi y_hi (z_hi)
+
+#--------------------1- AMR CONTROL ------------------------------
+amr.n_cell          = 256 64               # Level 0 number of cells in each direction 
+amr.v               = 1                     # AMR verbose
+amr.max_level       = 5                     # maximum level number allowed
+amr.ref_ratio       = 2 2 2 2               # refinement ratio
+amr.regrid_int      = 5                     # how often to regrid
+amr.n_error_buf     = 2 2 2 2               # number of buffer cells in error est
+amr.grid_eff        = 0.7                   # what constitutes an efficient grid
+amr.blocking_factor = 16                    # block factor in grid generation (min box size)
+amr.max_grid_size   = 64                    # max box size
+
+#---------------------- Problem ----------------------------------
+prob.P_mean  = 101325.0
+prob.T_input = 300.0
+prob.meanFlowMag = -12.0
+prob.EBinflow_T = 300.0
+prob.EBinflow_vel = 12.0
+prob.EB_isoTwall = 300.0
+
+#---------------------- PeleLM CONTROL ---------------------------
+peleLM.v = 1                                # PeleLMeX verbose
+peleLM.use_wbar = 1                         # Include Wbar term in species diffusion fluxes
+peleLM.sdc_iterMax = 2                      # Number of SDC iterations
+peleLM.num_init_iter = 3                    # Number of initial iterations
+peleLM.floor_species = 1                    # Enforce species positivity (non-conservative !)            
+peleLM.deltaT_verbose = 0                   # [OPT, DEF=0] Verbose of the deltaT iterative solve algorithm
+peleLM.deltaT_crashIfFailing = 0            # prevent the code from crashing if deltaT iter does not converge
+                                            # can happen if issues with non continuous Thermo
+
+#---------------------- Temporal CONTROL -------------------------
+peleLM.do_temporals = 1                     # Turn temporals ON/OFF
+peleLM.temporal_int = 10                    # Frequency of temporals
+peleLM.do_extremas = 1                      # Compute state extremas
+peleLM.do_mass_balance = 1                  # Compute mass balance
+peleLM.do_species_balance = 1               # Compute species balance
+
+#---------------------- Time Stepping CONTROL --------------------
+amr.max_step = 7000                          # Maximum number of time steps
+amr.stop_time = 0.1                         # final simulation physical time
+amr.cfl = 0.7                               # CFL number for hyperbolic system
+amr.dt_shrink = 0.001                       # Scale back initial timestep
+amr.dt_change_max = 1.1                     # Maximum dt increase btw successive steps
+
+#---------------------- IO CONTROL -------------------------------
+amr.restart = chk05000                       # Restart checkpoint file
+amr.check_int = 1000                          # Frequency of checkpoint output
+amr.plot_int = 1000                           # Frequency of pltfile output
+amr.derive_plot_vars = avg_pressure mag_vort mass_fractions
+
+#---------------------- Reactor CONTROL --------------------------
+peleLM.chem_integrator = "ReactorCvode"
+peleLM.use_typ_vals_chem = 1                # Use species/temp typical values in CVODE
+ode.rtol = 1.0e-6                           # Relative tolerance of the chemical solve
+ode.atol = 1.0e-5                           # Absolute tolerance factor applied on typical values
+ode.clean_init_massfrac = 0                 # Reaction computed as an increment
+cvode.solve_type = denseAJ_direct           # CVODE Linear solve type (for Newton direction) 
+cvode.max_order  = 4                        # CVODE max BDF order. 
+
+#---------------------- EB SETUP ---------------------------------
+#eb2.box_lo =    -0.01    0.066
+#eb2.box_hi =     0.042   0.070
+#eb2.box_has_fluid_inside = 0
+eb2.geom_type = UserDefined
+eb2.small_volfrac   = 1.0e-4
+peleLM.isothermal_EB = 1
+peleLM.EBinflow = 1
+
+#---------------------- Linear solver CONTROL --------------------
+nodal_proj.verbose = 0                      # Nodal projection verbose
+mac_proj.verbose = 0                        # MAC projection verbose
+
+#---------------------- Refinement CONTROL------------------------
+peleLM.refine_EB_type = Static
+peleLM.refine_EB_max_level = 2
+peleLM.refine_EB_buffer = 2.0
+
+amr.refinement_indicators = gradT mgvort 
+amr.gradT.max_level      = 2
+amr.gradT.adjacent_difference_greater = 100 
+amr.gradT.field_name     = temp
+amr.mgvort.max_level     = 1
+amr.mgvort.value_greater = 8000.0
+amr.mgvort.field_name    = mag_vort
+
+#---------------------- Debug/HPC CONTROL-------------------------
+#amrex.fpe_trap_invalid = 1
+#amrex.fpe_trap_zero = 1
+#amrex.fpe_trap_overflow = 1
