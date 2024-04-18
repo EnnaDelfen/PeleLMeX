@@ -44,14 +44,15 @@ pelelmex_initdata(
   }
 
   if ((y < 0.068) and (y > 0.05)) {
-      if ((x > 0.042) and (x < 0.052)) {
-          state(i, j, k, TEMP) = 1800.;
-      } else {
+      // REACTIVE CRAP
+      //if ((x > 0.042) and (x < 0.052)) {
+      //    state(i, j, k, TEMP) = 1800.;
+      //} else {
           state(i, j, k, TEMP) = prob_parm.T_input;
           //massfrac[H2_ID] = 0.00866;
           //massfrac[O2_ID] = 0.233*(1-massfrac[H2_ID]);
           //massfrac[N2_ID] = 0.767*(1-massfrac[H2_ID]);
-      }
+      //}
   } else {
       state(i, j, k, TEMP) = prob_parm.T_input;
       //massfrac[H2_ID] = 0.00866;
