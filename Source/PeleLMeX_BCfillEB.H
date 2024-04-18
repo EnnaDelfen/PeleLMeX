@@ -34,7 +34,7 @@ struct hasBCNormalEB {
   private:
     template<typename C>
     static constexpr auto check(T*)
-    -> matchBCNormEB_sign<T, AMREX_GPU_DEVICE void(const amrex::Real *,
+    -> matchBCNormEB_sign<T, void(const amrex::Real *,
                                                    amrex::Real *,
                                                    const amrex::Real,
                                                    amrex::GeometryData const&,
@@ -145,7 +145,7 @@ struct hasBCTypeEB {
   private:
     template<typename C>
     static constexpr auto check(T*)
-    -> matchBCTypeEB_sign<T, AMREX_GPU_DEVICE void(const amrex::Real *,
+    -> matchBCTypeEB_sign<T, void(const amrex::Real *,
                                                    int &,
                                                    amrex::GeometryData const&,
                                                    ProbParm const&)>;
