@@ -11,20 +11,21 @@ peleLM.lo_bc = Outflow  NoSlipWallAdiab   Interior # bc in x_lo y_lo (z_lo)
 peleLM.hi_bc = Inflow   NoSlipWallAdiab   Interior # bc in x_hi y_hi (z_hi)
 
 #---------------------- AMR CONTROL ------------------------------
-amr.n_cell          = 256 64 32           # Level 0 number of cells in each direction 
+amr.n_cell          = 512 128 64           # Level 0 number of cells in each direction 
 amr.v               = 1                     # AMR verbose
-amr.max_level       = 1                     # maximum level number allowed
+amr.max_level       = 3                     # maximum level number allowed
 amr.ref_ratio       = 2 2 2 2               # refinement ratio
 amr.regrid_int      = 5                     # how often to regrid
 amr.n_error_buf     = 2 2 2 2               # number of buffer cells in error est
 amr.grid_eff        = 0.7                   # what constitutes an efficient grid
 amr.blocking_factor = 16                    # block factor in grid generation (min box size)
-amr.max_grid_size   = 64                    # max box size
+amr.max_grid_size   = 128                    # max box size
 
 #---------------------- Problem ----------------------------------
 prob.P_mean  = 101325.0
 prob.T_input = 300.0
 prob.meanFlowMag = -12.0
+prob.is_reactive = false
 prob.EBinflow_T = 300.0
 prob.EBinflow_vel = 12.0
 prob.EB_isoTwall = 300.0
@@ -47,16 +48,16 @@ peleLM.do_mass_balance = 1                  # Compute mass balance
 peleLM.do_species_balance = 1               # Compute species balance
 
 #---------------------- Time Stepping CONTROL --------------------
-amr.max_step = 1000                          # Maximum number of time steps
+amr.max_step = 2000                          # Maximum number of time steps
 amr.stop_time = 0.1                         # final simulation physical time
 amr.cfl = 0.7                               # CFL number for hyperbolic system
 amr.dt_shrink = 0.01                        # Scale back initial timestep
 amr.dt_change_max = 1.1                     # Maximum dt increase btw successive steps
 
 #---------------------- IO CONTROL -------------------------------
-amr.restart = chk00200                     # Restart checkpoint file
-amr.check_int = 200                          # Frequency of checkpoint output
-amr.plot_int = 200                          # Frequency of pltfile output
+amr.restart = chk00300                   # Restart checkpoint file
+amr.check_int = 100                          # Frequency of checkpoint output
+amr.plot_int = 2000                          # Frequency of pltfile output
 amr.derive_plot_vars = avg_pressure mag_vort mass_fractions
 
 #---------------------- Reactor CONTROL --------------------------
@@ -76,13 +77,17 @@ eb2.geom_type = UserDefined
 eb2.maxiter = 500
 eb2.num_coarsen_opt=2
 eb2.max_grid_size=64
-eb2.small_volfrac   = 1.0e-4
+eb2.small_volfrac   = 2.0e-5
 peleLM.isothermal_EB = 1
 peleLM.EBinflow = 1
 
 #---------------------- Linear solver CONTROL --------------------
-nodal_proj.verbose = 0                      # Nodal projection verbose
-mac_proj.verbose = 0                        # MAC projection verbose
+nodal_proj.verbose = 1                      # Nodal projection verbose
+mac_proj.verbose = 2                        # MAC projection verbose
+mac_proj.rtol = 1.0e-10                     # [OPT, DEF=1e-11] Relative tolerance of the MAC projection
+mac_proj.atol = 1.0e-10                     # [OPT, DEF=1e-14] Absolute tolerance of the MAC projection
+#mac_proj.bottom_solver = smoother
+diffusion.verbose = 2
 
 #---------------------- Refinement CONTROL------------------------
 peleLM.refine_EB_type = Static
@@ -104,19 +109,20 @@ peleLM.znormP.type = DiagFramePlane                             # Diagnostic typ
 peleLM.znormP.file = zNorm15mm                                   # Output file prefix
 peleLM.znormP.normal = 2                                        # Plane normal (0, 1 or 2 for x, y or z)
 peleLM.znormP.center = 0.015                                    # Coordinate in the normal direction
-peleLM.znormP.int    = 50                                        # Frequency (as step #) for performing the diagnostic
+peleLM.znormP.int    = 20                                        # Frequency (as step #) for performing the diagnostic
 peleLM.znormP.interpolation = Linear                            # [OPT, DEF=Linear] Interpolation type : Linear or Quadratic
-peleLM.znormP.field_names = x_velocity y_velocity z_velocity mag_vort density         # List of variables outputted to the 2D pltfile
+peleLM.znormP.field_names = x_velocity y_velocity z_velocity mag_vort density RhoRT  Y(N2) Y(O2)       # List of variables outputted to the 2D pltfile
 
 peleLM.xnormP.type = DiagFramePlane                             # Diagnostic type
 peleLM.xnormP.file = xNorm43mm                                   # Output file prefix
 peleLM.xnormP.normal = 0                                        # Plane normal (0, 1 or 2 for x, y or z)
 peleLM.xnormP.center = 0.043                                    # Coordinate in the normal direction
-peleLM.xnormP.int    = 50                                        # Frequency (as step #) for performing the diagnostic
+peleLM.xnormP.int    = 20                                        # Frequency (as step #) for performing the diagnostic
 peleLM.xnormP.interpolation = Linear                            # [OPT, DEF=Linear] Interpolation type : Linear or Quadratic
-peleLM.xnormP.field_names = x_velocity y_velocity z_velocity mag_vort density         # List of variables outputted to the 2D pltfile
+peleLM.xnormP.field_names = x_velocity y_velocity z_velocity mag_vort density RhoRT Y(N2) Y(O2)        # List of variables outputted to the 2D pltfile
 
 #---------------------- Debug/HPC CONTROL-------------------------
 #amrex.fpe_trap_invalid = 1
 #amrex.fpe_trap_zero = 1
 #amrex.fpe_trap_overflow = 1
+amrex.abort_on_out_of_gpu_memory=1
