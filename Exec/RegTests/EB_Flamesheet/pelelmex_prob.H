@@ -32,6 +32,7 @@ pelelmex_initdata(
 
   auto eos = pele::physics::PhysicsType::eos();
 
+  // init air at 300 K, with init vel only in x
   amrex::Real massfrac[NUM_SPECIES] = {0.0};
   massfrac[O2_ID] = 0.233;
   massfrac[N2_ID] = 1.0 - massfrac[O2_ID];
@@ -39,27 +40,21 @@ pelelmex_initdata(
   AMREX_D_TERM(state(i, j, k, VELX) = prob_parm.meanFlowMag;
                , state(i, j, k, VELY) = 0.0;, state(i, j, k, VELZ) = 0.0);
 
+  state(i, j, k, TEMP) = prob_parm.T_input;
+
   if (!(is_incompressible == 0)) {
     return;
   }
 
-  if ((y < 0.068) and (y > 0.05)) {
-      // REACTIVE CRAP
-      //if ((x > 0.042) and (x < 0.052)) {
-      //    state(i, j, k, TEMP) = 1800.;
-      //} else {
-          state(i, j, k, TEMP) = prob_parm.T_input;
-          //massfrac[H2_ID] = 0.00866;
-          //massfrac[O2_ID] = 0.233*(1-massfrac[H2_ID]);
-          //massfrac[N2_ID] = 0.767*(1-massfrac[H2_ID]);
-      //}
-  } else {
-      state(i, j, k, TEMP) = prob_parm.T_input;
-      //massfrac[H2_ID] = 0.00866;
-      //massfrac[O2_ID] = 0.233*(1-massfrac[H2_ID]);
-      //massfrac[N2_ID] = 0.767*(1-massfrac[H2_ID]);
-  }
-  
+  if (prob_parm.is_reactive){
+      if ((y < 0.068) and (y > 0.05)) {
+          // REACTIVE CRAP -- only in 2D for now
+          if ((x > 0.042) and (x < 0.052)) {
+              state(i, j, k, TEMP) = prob_parm.T_hot;
+          }
+      }
+  } 
+
   if (y > 0.068) {
       massfrac[H2_ID] = 0.00866;
       massfrac[O2_ID] = 0.233*(1-massfrac[H2_ID]);
